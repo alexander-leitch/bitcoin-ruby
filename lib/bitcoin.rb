@@ -15,7 +15,9 @@ module Bitcoin
   autoload :VERSION,    'bitcoin/version'
   autoload :Logger,     'bitcoin/logger'
   autoload :Key,        'bitcoin/key'
+  autoload :ExtKey,     'bitcoin/ext_key'
   autoload :Builder,    'bitcoin/builder'
+  autoload :BloomFilter,'bitcoin/bloom_filter'
 
   autoload :Dogecoin,   'bitcoin/dogecoin'
   autoload :Litecoin,   'bitcoin/litecoin'
@@ -270,7 +272,7 @@ module Bitcoin
       branch.each do |hash|
         a, b = *( idx & 1 == 0 ? [target, hash] : [hash, target] )
         idx >>= 1;
-	target = bitcoin_mrkl( a, b )
+        target = bitcoin_mrkl( a, b )
       end
       target
     end
@@ -814,7 +816,7 @@ module Bitcoin
       proof_of_work_limit: 0x1e0fffff,
       alert_pubkeys: [],
       known_nodes: [
-		    "localhost",
+        "localhost",
         "testnets.chain.so", 
       ],
       checkpoints: {

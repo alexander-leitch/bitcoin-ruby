@@ -13,15 +13,17 @@ module Bitcoin
     # BIP 0031, pong message, is enabled for all versions AFTER this one
     BIP0031_VERSION = 60000
 
-    autoload :TxIn,    'bitcoin/protocol/txin'
-    autoload :TxOut,   'bitcoin/protocol/txout'
-    autoload :Tx,      'bitcoin/protocol/tx'
-    autoload :Block,   'bitcoin/protocol/block'
-    autoload :Addr,    'bitcoin/protocol/address'
-    autoload :Alert,   'bitcoin/protocol/alert'
-    autoload :Reject,  'bitcoin/protocol/reject'
-    autoload :Version, 'bitcoin/protocol/version'
-    autoload :AuxPow,  'bitcoin/protocol/aux_pow'
+    autoload :ScriptWitness, 'bitcoin/protocol/script_witness'
+    autoload :TxIn,          'bitcoin/protocol/txin'
+    autoload :TxOut,         'bitcoin/protocol/txout'
+    autoload :Tx,            'bitcoin/protocol/tx'
+    autoload :Block,         'bitcoin/protocol/block'
+    autoload :Addr,          'bitcoin/protocol/address'
+    autoload :Alert,         'bitcoin/protocol/alert'
+    autoload :Reject,        'bitcoin/protocol/reject'
+    autoload :Version,       'bitcoin/protocol/version'
+    autoload :AuxPow,        'bitcoin/protocol/aux_pow'
+    autoload :PartialMerkleTree,  'bitcoin/protocol/partial_merkle_tree'
 
     autoload :Handler, 'bitcoin/protocol/handler'
     autoload :Parser,  'bitcoin/protocol/parser'
@@ -141,7 +143,7 @@ module Bitcoin
       pkt("verack", "")
     end
 
-    TypeLookup = Hash[:tx, 1, :block, 2, nil, 0]
+    TypeLookup = Hash[:tx, 1, :block, 2, :filtered_block, 3, nil, 0]
 
     def self.getdata_pkt(type, hashes)
       return if hashes.size > MAX_INV_SZ
@@ -158,7 +160,7 @@ module Bitcoin
     DEFAULT_STOP_HASH = "00"*32
 
     def self.locator_payload(version, locator_hashes, stop_hash)
-      payload = [
+      [
         [version].pack("V"),
         pack_var_int(locator_hashes.size),
         locator_hashes.map{|l| l.htb_reverse }.join,
